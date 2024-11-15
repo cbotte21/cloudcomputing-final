@@ -1,4 +1,3 @@
-import boto3
 import json
 from parse import parse_line
 from typing import Dict

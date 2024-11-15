@@ -42,6 +42,7 @@ def parse_line(line):
     if content == []:
         content = None
 
+    #data base rds 
     res = {
         "author": author,
         "content": content,
