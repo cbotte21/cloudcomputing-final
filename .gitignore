@@ -1,10 +1,6 @@
-iac/parseFiles/venv
-iac/parseFilesTest/venv
 crawler/venv
 remixjs/.cache
 remixjs/node_modules
 remixjs/build
-delete_duplicates/venv
 *.iml
 *.xml
-/cdk
