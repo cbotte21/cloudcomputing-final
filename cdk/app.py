@@ -8,6 +8,7 @@ from aws_cdk import (
     aws_rds as rds,
     aws_elasticache as elasticache,
 )
+from aws_cdk.aws_s3_notifications import LambdaDestination
 from constructs import Construct
 
 class MyStack(cdk.Stack):
@@ -21,7 +22,8 @@ class MyStack(cdk.Stack):
         bucket = s3.Bucket(self, "searchengine-data", versioned=True)
 
         # Create an RDS database
-        db_instance = rds.DatabaseInstance(self, "searchengine-rds",
+        db_name = "searchengine_database"
+        db_instance = rds.DatabaseInstance(self, db_name,
             engine=rds.DatabaseInstanceEngine.postgres(version=rds.PostgresEngineVersion.VER_12_3),
             instance_type=ec2.InstanceType("t2.micro"),
             vpc=vpc,
@@ -32,9 +34,11 @@ class MyStack(cdk.Stack):
             vpc_subnets={
                 "subnet_type": ec2.SubnetType.PRIVATE_WITH_NAT
             },
-            database_name="searchengine_database",
+            database_name=db_name,
             credentials=rds.Credentials.from_generated_secret("postgres"),
         )
+        db_endpoint = db_instance.db_instance_endpoint_address
+        db_port = db_instance.db_instance_endpoint_port
 
         # Security Group for ElastiCache
         redis_sg = ec2.SecurityGroup(
@@ -75,6 +79,20 @@ class MyStack(cdk.Stack):
             machine_image=ec2.AmazonLinuxImage(),
             vpc=vpc,
         )
+        webServerInstance.role.add_managed_policy(
+            iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3ReadOnlyAccess")
+        )
+        webServerInstance.add_user_data(
+            f"echo 'DB_HOST={db_endpoint}' >> /etc/environment",
+            f"echo 'DB_PORT={db_port}' >> /etc/environment",
+            f"echo 'DB_NAME={db_name}' >> /etc/environment",
+        )
+        webServerInstance.role.add_to_policy(
+            iam.PolicyStatement(
+                actions=["rds:Connect", "elasticache:Connect"],
+                resources=["*"]  # Replace with resource ARNs for more secure access
+            )
+        )
 
          # Create an EC2 instance
         crawlerInstance = ec2.Instance(self, "crawler",
@@ -82,13 +100,49 @@ class MyStack(cdk.Stack):
             machine_image=ec2.AmazonLinuxImage(),
             vpc=vpc,
         )
+        crawlerInstance.add_user_data(
+            f"echo 'REDIS_HOST={redis_cluster.attr_redis_endpoint_address}' >> /etc/environment",
+            f"echo 'REDIS_PORT=6379' >> /etc/environment", 
+            f"echo 'S3_BUCKET_NAME={bucket.bucket_name}' >> /etc/environment",
+        )
+        crawlerInstance.role.add_managed_policy(
+            iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3FullAccess")
+        )
+        crawlerInstance.role.add_to_policy(
+            iam.PolicyStatement(
+                actions=["rds:Connect", "elasticache:Connect"],
+                resources=["*"]
+            )
+        )
 
-        # Create a Lambda function
         lambda_function = _lambda.Function(self, "file_parser",
             runtime=_lambda.Runtime.PYTHON_3_8,
             handler="index.handler",
             code=_lambda.Code.from_asset("lambda"),
             vpc=vpc,
+            environment={
+                "DB_HOST": db_instance.db_instance_endpoint_address,
+                "DB_PORT": db_instance.db_instance_endpoint_port,
+                "DB_NAME": db_name,
+            },
+        )
+        lambda_function.add_to_role_policy(
+            iam.PolicyStatement(
+                actions=["s3:GetObject", "s3:PutObject"],
+                resources=[f"{bucket.bucket_arn}/*"]
+            )
+        )
+        lambda_function.add_to_role_policy(
+            iam.PolicyStatement(
+                actions=["rds:Connect"],
+                resources=["*"]  # Replace with RDS resource ARN for more secure access
+            )
+        )
+
+        # Lambda s3 trigger
+        bucket.add_event_notification(
+            s3.EventType.OBJECT_CREATED,
+            s3_notifications.LambdaDestination(lambda_function)
         )
 
 
