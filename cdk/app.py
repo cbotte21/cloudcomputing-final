@@ -7,6 +7,8 @@ from aws_cdk import (
     aws_lambda as _lambda,
     aws_rds as rds,
     aws_elasticache as elasticache,
+    aws_iam as iam,
+    aws_sns as s3_notifications
 )
 from aws_cdk.aws_s3_notifications import LambdaDestination
 from constructs import Construct
@@ -142,7 +144,7 @@ class MyStack(cdk.Stack):
         # Lambda s3 trigger
         bucket.add_event_notification(
             s3.EventType.OBJECT_CREATED,
-            s3_notifications.LambdaDestination(lambda_function)
+            LambdaDestination(lambda_function)
         )
 
 
