@@ -1,49 +1,67 @@
+import os
 import json
 from parse import parse_line
-from typing import Dict
 from aws_lambda_powertools.utilities.streaming.s3_object import S3Object
-from aws_lambda_powertools.utilities.typing import LambdaContext
-import requests
-from requests_aws4auth import AWS4Auth
-import boto3
+import pymysql  # For MySQL; use psycopg2 for PostgreSQL
 
-session = boto3.Session()
-credentials = session.get_credentials()
-region = 'us-east-2'  
-awsauth = AWS4Auth(credentials.access_key, credentials.secret_key, region, 'es', session_token=credentials.token)
-url = 'https://search-searchengine-zvepn4hr2yyugmei4fqnxxhqaq.us-east-2.es.amazonaws.com/search/_doc/'  # Replace with your endpoint and index
-
-BUCKET_NAME = 'searchengine-data'
+BUCKET_NAME = "searchengine-data"
 
 def lambda_handler(event, context):
     # Log the event to check its structure
     print("Received event:", event)
     
-    files = event
-    if not files:
-        print("No files to process.")
-        return
+    # Extract the bucket name and file key from the S3 event
+    record = event['Records'][0]
+    bucket = record['s3']['bucket']['name']
+    key = record['s3']['object']['key']
     
-    print("Files to process:", files)
-    for file in files:
-        print(f"Processing file: {file}")
-        
-        s3 = S3Object(bucket=BUCKET_NAME, key=file)
+    print(f"Processing file from bucket: {bucket}, key: {key}")
+    
+    # Process the S3 file
+    s3 = S3Object(bucket=bucket, key=key)
+    connection = create_rds_connection()
+    
+    try:
         for line in s3.readlines():
             parsed = parse_line(line)
-            if parsed[1]: # Is valid
-                send_to_opensearch(parsed[0])
+            if parsed[1]:  # Is valid
+                insert_into_rds(connection, parsed[0])
+    finally:
+        connection.close()
 
     return {
-        "batchResults": files
+        "message": f"File {key} processed successfully."
     }
 
-def send_to_opensearch(document):
-    # Make the request to insert the documents
-    response = requests.post(url, auth=awsauth, json=document)
+def create_rds_connection():
+    """Creates and returns a connection to the RDS database using environment variables."""
+    try:
+        connection = pymysql.connect(
+            host=os.environ["RDS_HOST"],
+            port=int(os.environ["RDS_PORT"]),
+            user=os.environ["RDS_USER"],
+            password=os.environ["RDS_PASSWORD"],
+            database=os.environ["RDS_DATABASE"],
+            cursorclass=pymysql.cursors.DictCursor
+        )
+        print("RDS connection established.")
+        return connection
+    except Exception as e:
+        print("Failed to connect to RDS:", e)
+        raise
 
-    # Check the response
-    if response.status_code == 200:
-        print(f"Insert successful: {document['url']}")  # Use single quotes
-    else:
-        print(f"Error during insert: {document['url']}", response.status_code, response.text)  # Use single quotes
+def insert_into_rds(connection, document):
+    """Inserts a document into the RDS database."""
+    try:
+        with connection.cursor() as cursor:
+            sql = """
+            INSERT INTO your_table_name (url, field1, field2, field3) 
+            VALUES (%s, %s, %s, %s)
+            """
+            # Adjust field names and values based on your document structure
+            cursor.execute(sql, (document['url'], document['field1'], document['field2'], document['field3']))
+            connection.commit()
+            print(f"Insert successful for URL: {document['url']}")
+    except Exception as e:
+        print(f"Error inserting into RDS for URL: {document['url']}", e)
+        raise
