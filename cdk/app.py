@@ -26,8 +26,8 @@ class MyStack(cdk.Stack):
         # Create an RDS database
         db_name = "searchengine_database"
         db_instance = rds.DatabaseInstance(self, db_name,
-            engine=rds.DatabaseInstanceEngine.postgres(version=rds.PostgresEngineVersion.VER_12_3),
-            instance_type=ec2.InstanceType("t2.micro"),
+            engine=rds.DatabaseInstanceEngine.postgres(version=rds.PostgresEngineVersion.VER_16_3),
+            instance_type=ec2.InstanceType("db.t3.micro"),
             vpc=vpc,
             multi_az=False,
             allocated_storage=20,
@@ -88,6 +88,14 @@ class MyStack(cdk.Stack):
             f"echo 'DB_HOST={db_endpoint}' >> /etc/environment",
             f"echo 'DB_PORT={db_port}' >> /etc/environment",
             f"echo 'DB_NAME={db_name}' >> /etc/environment",
+            "sudo yum install -y gcc-c++ make",
+            "curl -sL https://rpm.nodesource.com/setup_16.x | sudo -E bash -",
+            "sudo yum install -y nodejs",
+            "sudo yum install git -y",
+            "git clone https://github.com/cbotte21/cloudcomputing-final app",
+            "cd app/remixjs",
+            "npm build",
+            "npm start"
         )
         webServerInstance.role.add_to_policy(
             iam.PolicyStatement(
@@ -106,6 +114,12 @@ class MyStack(cdk.Stack):
             f"echo 'REDIS_HOST={redis_cluster.attr_redis_endpoint_address}' >> /etc/environment",
             f"echo 'REDIS_PORT=6379' >> /etc/environment", 
             f"echo 'S3_BUCKET_NAME={bucket.bucket_name}' >> /etc/environment",
+            "sudo amazon-linux-extras install python3",
+            "sudo yum install git -y",
+            "git clone https://github.com/cbotte21/cloudcomputing-final app",
+            "cd app/crawler",
+            "pip install -r requirements.txt",
+            # Run application
         )
         crawlerInstance.role.add_managed_policy(
             iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3FullAccess")
