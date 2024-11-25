@@ -55,8 +55,8 @@ def insert_into_rds(connection, document):
     try:
         with connection.cursor() as cursor:
             sql = """
-            INSERT INTO your_table_name (url, field1, field2, field3) 
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO your_table_name (author, content, description, published_date, title, url) 
+            VALUES (%s, %s, %s, %s, %s, %s)
             """
             # Adjust field names and values based on your document structure
             cursor.execute(sql, (document['url'], document['field1'], document['field2'], document['field3']))
