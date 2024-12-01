@@ -3,6 +3,7 @@
   import { Form, Link, MetaFunction, useLoaderData } from "@remix-run/react";
   import { json, redirect } from "@remix-run/server-runtime";
   import Index from "./_index";
+  import { Pool } from "pg";
 
   // export const loader = async ({ request }: any) => {
     // const username = process.env.USERNAME;
@@ -14,14 +15,15 @@
     // TODO: Query rds
     // Return response
 
+    const pool = new Pool({
+      host: process.env.PG_HOST,
+      user: process.env.PG_USER,
+      password: process.env.PG_PASSWORD,
+      database: process.env.PG_DATABASE,
+      port: parseInt(process.env.PG_PORT || "5432"),
+    });
+    
     export const loader = async ({ request }: any) => {
-      const postgrestUrl = process.env.POSTGREST_URL;
-      const postgrestApiKey = process.env.POSTGREST_API_KEY;
-    
-      if (!postgrestUrl) {
-        throw new Error("PostgREST URL is not configured.");
-      }
-    
       const url = new URL(request.url);
       const query = url.searchParams.get("q");
     
@@ -29,34 +31,24 @@
         return json({ results: [] });
       }
     
-      // Make a request to PostgREST to search for data
       try {
-        const response = await fetch(`${postgrestUrl}/sites?title=ilike.%${encodeURIComponent(query)}%`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${postgrestApiKey}`,
-          },
-        });
+        // Query the PostgreSQL database
+        const result = await pool.query(
+          "SELECT * FROM your_table_name WHERE title ILIKE $1",
+          [`%${query}%`] // Parameterized query to prevent SQL injection
+        );
     
-        if (!response.ok) {
-          console.error("Failed to fetch data from PostgREST:", response.statusText);
-          return json({ results: [] });
-        }
-    
-        const data = await response.json();
         return json({
           results: {
-            sites: data,
+            sites: result.rows,
             defaultQuery: query,
           },
         });
       } catch (error) {
-        console.error("Error connecting to PostgREST:", error);
+        console.error("Error querying PostgreSQL:", error);
         return json({ results: [] });
       }
     };
-
   // Meta function for SEO
   export const meta: MetaFunction = () => [
     { title: 'Remix Starter - Results' },
