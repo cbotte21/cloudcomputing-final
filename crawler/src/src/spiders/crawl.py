@@ -4,6 +4,7 @@ from scrapy.utils.project import get_project_settings
 from src.items import ParsedItem
 from src.utils import fixUrl
 import time
+import os
 
 timestamp = int(time.time())
 
@@ -52,8 +53,8 @@ class CrawlSpider(scrapy.Spider):
     def __init__(self):
         self.cnt = 0
         settings = get_project_settings()
-        domain = settings.get('REDIS_HOST', 'localhost') # 10 Minute default TTL
-        port = settings.get('REDIS_PORT', 6379) # 10 Minute default TTL
+        domain = os.getenv('REDIS_HOST', 'localhost')
+        port = int(os.getenv('REDIS_PORT', 6379))  
         self.cache = redis.Redis(host=domain, port=port)
     
     def parse(self, response):

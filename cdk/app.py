@@ -8,7 +8,8 @@ from aws_cdk import (
     aws_rds as rds,
     aws_elasticache as elasticache,
     aws_iam as iam,
-    aws_sns as s3_notifications
+    aws_sns as s3_notifications,
+    SecretValue
 )
 from aws_cdk.aws_s3_notifications import LambdaDestination
 from constructs import Construct
@@ -55,7 +56,7 @@ class MyStack(cdk.Stack):
                 "subnet_type": ec2.SubnetType.PRIVATE_WITH_EGRESS
             },
             database_name=db_name,
-            credentials=rds.Credentials.from_password(db_user, db_password),
+            credentials = rds.Credentials.from_password(db_user, SecretValue.unsafe_plain_text(db_password)),
         )
         db_endpoint = db_instance.db_instance_endpoint_address
         db_port = str(db_instance.db_instance_endpoint_port)
