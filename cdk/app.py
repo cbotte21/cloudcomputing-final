@@ -27,7 +27,7 @@ class MyStack(cdk.Stack):
         db_name = "searchengine_database"
         db_instance = rds.DatabaseInstance(self, db_name,
             engine=rds.DatabaseInstanceEngine.postgres(version=rds.PostgresEngineVersion.VER_16_3),
-            instance_type=ec2.InstanceType("db.t3.micro"),
+            instance_type=ec2.InstanceType("t3.micro"),
             vpc=vpc,
             multi_az=False,
             allocated_storage=20,
@@ -120,6 +120,7 @@ class MyStack(cdk.Stack):
             "cd app/crawler",
             "pip install -r requirements.txt",
             # Run application
+            "scrapy crawl index"
         )
         crawlerInstance.role.add_managed_policy(
             iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3FullAccess")
