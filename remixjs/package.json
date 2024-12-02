@@ -20,11 +20,13 @@
     "@remix-run/serve": "latest",
     "@remix-run/server-runtime": "latest",
     "dotenv": "^16.4.5",
+    "pg": "^8.13.1",
     "react": "latest",
     "react-dom": "latest"
   },
   "devDependencies": {
     "@remix-run/dev": "latest",
+    "@types/pg": "^8.11.10",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "typescript": "latest"
