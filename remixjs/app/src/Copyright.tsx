@@ -5,7 +5,7 @@ import { Box, Divider, Grid2 } from '@mui/material';
 
 export default function Copyright() {
   return (
-    <Grid2 direction="column" sx={{paddingY: 4}}>
+    <Grid2 container direction="column" sx={{paddingY: 4}}>
       <Grid2>
         <Divider />
       </Grid2>

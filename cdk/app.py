@@ -41,8 +41,8 @@ class MyStack(cdk.Stack):
         bucket = s3.Bucket(self, "searchengine-data", versioned=True)
 
         # Create an RDS database
-        db_user = "admin"
-        db_password = "password"
+        db_user = "searchengineuser"
+        db_password = "Superpassword123"
         db_name = "searchengine_database"
         db_instance = rds.DatabaseInstance(self, db_name,
             engine=rds.DatabaseInstanceEngine.postgres(version=rds.PostgresEngineVersion.VER_16_3),
@@ -121,8 +121,8 @@ class MyStack(cdk.Stack):
             "git clone https://github.com/cbotte21/cloudcomputing-final app",
             "cd app/remixjs",
             "npm install",
-            "npm build",
-            "npm start"
+            "npm run build > /var/log/remixjs_build_output.log 2>&1",
+            "npm run start > /var/log/remixjs_output.log 2>&1"
         )
         webServerInstance.role.add_to_policy(
             iam.PolicyStatement(
@@ -155,14 +155,15 @@ class MyStack(cdk.Stack):
             f"echo 'REDIS_HOST={redis_cluster.attr_redis_endpoint_address}' >> /etc/environment",
             f"echo 'REDIS_PORT=6379' >> /etc/environment", 
             f"echo 'S3_BUCKET_NAME={bucket.bucket_name}' >> /etc/environment",
-            "sudo amazon-linux-extras install python3",
+            "sudo amazon-linux-extras enable python3.8",
+            "sudo yum install -y python3",
             "sudo yum install git -y",
             "git clone https://github.com/cbotte21/cloudcomputing-final app",
             "cd app/crawler",
-            "pip install -r requirements.txt",
-            # Run application
+            "python3 -m pip install --upgrade pip",
+            "pip3 install -r requirements.txt",
             "cd src",
-            "scrapy crawl crawl"
+            "scrapy crawl crawl > /var/log/scrapy_output.log 2>&1"
         )
         crawlerInstance.role.add_managed_policy(
             iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3FullAccess")
