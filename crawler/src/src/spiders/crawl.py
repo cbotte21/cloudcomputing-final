@@ -52,7 +52,7 @@ class CrawlSpider(scrapy.Spider):
     def __init__(self):
         self.cnt = 0
         settings = get_project_settings()
-        domain = settings.get('REDIS_DOMAIN', 'localhost') # 10 Minute default TTL
+        domain = settings.get('REDIS_HOST', 'localhost') # 10 Minute default TTL
         port = settings.get('REDIS_PORT', 6379) # 10 Minute default TTL
         self.cache = redis.Redis(host=domain, port=port)
     

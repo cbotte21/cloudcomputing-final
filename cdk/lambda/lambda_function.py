@@ -2,7 +2,8 @@ import os
 import json
 from parse import parse_line
 from aws_lambda_powertools.utilities.streaming.s3_object import S3Object
-import pymysql  # For MySQL; use psycopg2 for PostgreSQL
+import psycopg2  # PostgreSQL adapter for Python
+from psycopg2.extras import DictCursor  # For Dict-like cursor behavior
 
 BUCKET_NAME = "searchengine-data"
 
@@ -34,34 +35,34 @@ def lambda_handler(event, context):
     }
 
 def create_rds_connection():
-    """Creates and returns a connection to the RDS database using environment variables."""
+    """Creates and returns a connection to the PostgreSQL RDS database using environment variables."""
     try:
-        connection = pymysql.connect(
-            host=os.environ["RDS_HOST"],
-            port=int(os.environ["RDS_PORT"]),
-            user=os.environ["RDS_USER"],
-            password=os.environ["RDS_PASSWORD"],
-            database=os.environ["RDS_DATABASE"],
-            cursorclass=pymysql.cursors.DictCursor
+        connection = psycopg2.connect(
+            host=os.environ["PG_HOST"],
+            port=int(os.environ["PG_PORT"]),
+            user=os.environ["PG_USER"],
+            password=os.environ["PG_PASSWORD"],
+            dbname=os.environ["PG_DATABASE"],
+            cursor_factory=DictCursor  # Optional: enables dict-like row access
         )
-        print("RDS connection established.")
+        print("PostgreSQL RDS connection established.")
         return connection
     except Exception as e:
-        print("Failed to connect to RDS:", e)
+        print("Failed to connect to PostgreSQL RDS:", e)
         raise
 
 def insert_into_rds(connection, document):
-    """Inserts a document into the RDS database."""
+    """Inserts a document into the PostgreSQL RDS database."""
     try:
         with connection.cursor() as cursor:
             sql = """
-            INSERT INTO your_table_name (author, content, description, published_date, title, url) 
-            VALUES (%s, %s, %s, %s, %s, %s)
+            INSERT INTO your_table_name (url, field1, field2, field3) 
+            VALUES (%s, %s, %s, %s)
             """
             # Adjust field names and values based on your document structure
             cursor.execute(sql, (document['url'], document['field1'], document['field2'], document['field3']))
             connection.commit()
             print(f"Insert successful for URL: {document['url']}")
     except Exception as e:
-        print(f"Error inserting into RDS for URL: {document['url']}", e)
+        print(f"Error inserting into PostgreSQL RDS for URL: {document['url']}", e)
         raise
