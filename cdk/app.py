@@ -115,8 +115,9 @@ class MyStack(cdk.Stack):
             f"echo 'PG_USER={db_user}' >> /etc/environment",
             f"echo 'PG_PASSWORD={db_password}' >> /etc/environment",
             "sudo yum install -y gcc-c++ make",
-            "curl -sL https://rpm.nodesource.com/setup_16.x | sudo -E bash -",
-            "sudo yum install -y nodejs",
+            "curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -",  # Install Node.js 18.x
+            "sudo yum install -y nodejs",  # Install Node.js
+            "sudo npm install -g npm@latest",  # Update npm to the latest version
             "sudo yum install git -y",
             "git clone https://github.com/cbotte21/cloudcomputing-final app",
             "cd app/remixjs",
@@ -155,13 +156,12 @@ class MyStack(cdk.Stack):
             f"echo 'REDIS_HOST={redis_cluster.attr_redis_endpoint_address}' >> /etc/environment",
             f"echo 'REDIS_PORT=6379' >> /etc/environment", 
             f"echo 'S3_BUCKET_NAME={bucket.bucket_name}' >> /etc/environment",
-            "sudo amazon-linux-extras enable python3.8",
-            "sudo yum install -y python3",
+            "sudo yum install -y python38",
+            "sudo python3 -m pip install --upgrade pip",
             "sudo yum install git -y",
             "git clone https://github.com/cbotte21/cloudcomputing-final app",
             "cd app/crawler",
-            "python3 -m pip install --upgrade pip",
-            "pip3 install -r requirements.txt",
+            "python3 -m pip install -r requirements.txt",
             "cd src",
             "scrapy crawl crawl > /var/log/scrapy_output.log 2>&1"
         )
@@ -170,7 +170,7 @@ class MyStack(cdk.Stack):
         )
         crawlerInstance.role.add_to_policy(
             iam.PolicyStatement(
-                actions=["rds:Connect", "elasticache:Connect"],
+                actions=["elasticache:Connect"],
                 resources=["*"]
             )
         )

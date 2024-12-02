@@ -7,13 +7,14 @@ import time
 import os
 
 timestamp = int(time.time())
+bucket_name = os.getenv("S3_BUCKET_NAME", "undefined-bucket")
 
 class CrawlSpider(scrapy.Spider):
     name = "crawl"
 
     custom_settings = {
         "FEEDS": {
-            f"s3://searchengine-data/scraped/%(batch_id)d-{timestamp}.json": {
+            f"s3://{bucket_name}/scraped/%(batch_id)d-{timestamp}.json": {
                 "format": "jsonlines"
             }
         },
