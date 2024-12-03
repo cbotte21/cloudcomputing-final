@@ -58,7 +58,7 @@ class MyStack(cdk.Stack):
             database_name=db_name,
             credentials = rds.Credentials.from_password(db_user, SecretValue.unsafe_plain_text(db_password)),
         )
-        db_endpoint = db_instance.db_instance_endpoint_address
+        db_endpoint = db_instance.instance_endpoint.socket_address
         db_port = str(db_instance.db_instance_endpoint_port)
 
 
@@ -100,7 +100,7 @@ class MyStack(cdk.Stack):
         webServerInstance = ec2.Instance(self, "WebServer",
             instance_type=ec2.InstanceType("t2.micro"),
             machine_image=ec2.AmazonLinuxImage(
-                generation=ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023  # Use Amazon Linux 2023
+                generation=ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023  
             ),
             vpc=vpc,
             vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),  # Use public subnet
@@ -114,19 +114,17 @@ class MyStack(cdk.Stack):
             "sudo yum install -y gcc-c++ make",
             "curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -", 
             "sudo yum install nodejs -y",
-            "sudo yum install -y nodejs@latest",  # Install Node.js
-            "sudo npm install -g npm@latest",  # Update npm to the latest version
+            "sudo yum install -y nodejs@latest", 
+            "sudo npm install -g npm@latest",  
             "sudo yum install git -y",
             "git clone https://github.com/cbotte21/cloudcomputing-final app",
             "cd app/remixjs",
-
-            "echo 'PG_HOST={db_endpoint}' | sudo tee -a .env",
-            "echo 'PG_PORT={db_port}' | sudo tee -a .env",
-            "echo 'PG_DATABASE={db_name}' | sudo tee -a .env",
-            "echo 'PG_USER={db_user}' | sudo tee -a .env",
-            "echo 'PG_PASSWORD={db_password}' | sudo tee -a .env",
             "npm install",
-            "npm run build > /var/log/remixjs_build_output.log 2>&1",
+            "npm run build > /var/log/remixjs_build_output.log 2>&1",    f"export PG_HOST={db_endpoint}",
+            f"export PG_PORT={db_port}",
+            f"export PG_DATABASE={db_name}",
+            f"export PG_USER={db_user}",
+            f"export PG_PASSWORD={db_password}",
             "npm run start > /var/log/remixjs_output.log 2>&1"
         )
         webServerInstance.role.add_to_policy(
