@@ -17,10 +17,12 @@ from constructs import Construct
 class MyStack(cdk.Stack):
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
-        key_pair = ec2.KeyPair.from_key_pair_name(self, 'KeyPair', 'CodySchool')
+        key_pair = ec2.KeyPair.from_key_pair_name(self, 'KeyPair', 'Cody')
 
         vpc = ec2.Vpc(self, "searchengine-vpc", 
             max_azs=2,  # Number of Availability Zones to use
+            enable_dns_support=True,
+            enable_dns_hostnames=True,
             nat_gateways=1,  # No NAT Gateway (since we're using public subnets)
             subnet_configuration=[
                 ec2.SubnetConfiguration(
@@ -44,10 +46,17 @@ class MyStack(cdk.Stack):
         db_user = "searchengineuser"
         db_password = "Superpassword123"
         db_name = "searchengine_database"
+        parameter_group = rds.ParameterGroup(self, "RDSParameterGroup",
+            engine=rds.DatabaseInstanceEngine.postgres(version=rds.PostgresEngineVersion.VER_16_3),
+            parameters={
+                "rds.force_ssl": "0"  # Disable SSL enforcement
+            }
+        )
         db_instance = rds.DatabaseInstance(self, db_name,
             engine=rds.DatabaseInstanceEngine.postgres(version=rds.PostgresEngineVersion.VER_16_3),
             instance_type=ec2.InstanceType("t3.micro"),
             vpc=vpc,
+            parameter_group=parameter_group,
             multi_az=False,
             allocated_storage=20,
             max_allocated_storage=100,
@@ -55,7 +64,7 @@ class MyStack(cdk.Stack):
             database_name=db_name,
             credentials = rds.Credentials.from_password(db_user, SecretValue.unsafe_plain_text(db_password)),
         )
-        db_endpoint = db_instance.instance_endpoint.socket_address
+        db_endpoint = db_instance.instance_endpoint.socket_address.split(":")[0]
         db_port = str(db_instance.db_instance_endpoint_port)
 
 
@@ -117,7 +126,8 @@ class MyStack(cdk.Stack):
             "git clone https://github.com/cbotte21/cloudcomputing-final app",
             "cd app/remixjs",
             "npm install",
-            "npm run build > /var/log/remixjs_build_output.log 2>&1",    f"export PG_HOST={db_endpoint}",
+            "npm run build > /var/log/remixjs_build_output.log 2>&1",
+            f"export PG_HOST={db_endpoint}",
             f"export PG_PORT={db_port}",
             f"export PG_DATABASE={db_name}",
             f"export PG_USER={db_user}",
@@ -180,7 +190,7 @@ class MyStack(cdk.Stack):
             "Allow SSH access from anywhere"
         )
 
-        lambda_function = _lambda.Function(self, "file_parser",
+        lambda_function = _lambda.Function(self, "FileParser",
             runtime=_lambda.Runtime.PYTHON_3_8,
             handler="index.handler",
             code=_lambda.Code.from_asset("lambda/lambda.zip"),
@@ -198,12 +208,6 @@ class MyStack(cdk.Stack):
             iam.PolicyStatement(
                 actions=["s3:GetObject", "s3:PutObject"],
                 resources=[f"{bucket.bucket_arn}/*"]
-            )
-        )
-        lambda_function.add_to_role_policy(
-            iam.PolicyStatement(
-                actions=["rds:Connect"],
-                resources=["*"]  # Replace with RDS resource ARN for more secure access
             )
         )
 
