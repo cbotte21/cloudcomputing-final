@@ -5,7 +5,7 @@
   "scripts": {
     "build": "remix build",
     "dev": "remix dev --manual",
-    "start": "remix-serve ./build/index.js",
+    "start": "HOST=0.0.0.0 PORT=80 remix-serve ./build/index.js --port 80",
     "typecheck": "tsc"
   },
   "dependencies": {

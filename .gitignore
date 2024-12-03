@@ -2,5 +2,6 @@ crawler/venv
 remixjs/.cache
 remixjs/node_modules
 remixjs/build
+cdk/lambda/deployment
 *.iml
 *.xml

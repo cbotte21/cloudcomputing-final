@@ -99,7 +99,9 @@ class MyStack(cdk.Stack):
         # Create an EC2 instance
         webServerInstance = ec2.Instance(self, "webServer",
             instance_type=ec2.InstanceType("t2.micro"),
-            machine_image=ec2.AmazonLinuxImage(),
+            machine_image=ec2.AmazonLinuxImage(
+                generation=ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023  # Use Amazon Linux 2023
+            ),
             vpc=vpc,
             vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),  # Use public subnet
             associate_public_ip_address=True,
@@ -116,7 +118,8 @@ class MyStack(cdk.Stack):
             f"echo 'PG_PASSWORD={db_password}' >> /etc/environment",
             "sudo yum install -y gcc-c++ make",
             "curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -",  # Install Node.js 18.x
-            "sudo yum install -y nodejs",  # Install Node.js
+            "sudo yum install nodejs -y",
+            "sudo yum install -y nodejs@latest",  # Install Node.js
             "sudo npm install -g npm@latest",  # Update npm to the latest version
             "sudo yum install git -y",
             "git clone https://github.com/cbotte21/cloudcomputing-final app",
@@ -163,7 +166,7 @@ class MyStack(cdk.Stack):
             "cd app/crawler",
             "python3 -m pip install -r requirements.txt",
             "cd src",
-            "scrapy crawl crawl > /var/log/scrapy_output.log 2>&1"
+            "/usr/local/bin/scrapy crawl crawl > /var/log/scrapy_output.log 2>&1"
         )
         crawlerInstance.role.add_managed_policy(
             iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3FullAccess")
@@ -183,7 +186,7 @@ class MyStack(cdk.Stack):
         lambda_function = _lambda.Function(self, "file_parser",
             runtime=_lambda.Runtime.PYTHON_3_8,
             handler="index.handler",
-            code=_lambda.Code.from_asset("lambda"),
+            code=_lambda.Code.from_asset("lambda/lambda.zip"),
             vpc=vpc,
             environment={
                 "PG_HOST": db_endpoint,
