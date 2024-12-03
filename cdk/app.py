@@ -17,7 +17,7 @@ from constructs import Construct
 class MyStack(cdk.Stack):
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
-        key_pair = ec2.KeyPair.from_key_pair_name(self, 'KeyPair', 'Cody')
+        key_pair = ec2.KeyPair.from_key_pair_name(self, 'KeyPair', 'CodySchool')
 
         vpc = ec2.Vpc(self, "searchengine-vpc", 
             max_azs=2,  # Number of Availability Zones to use
@@ -206,6 +206,12 @@ class MyStack(cdk.Stack):
                 resources=["*"]  # Replace with RDS resource ARN for more secure access
             )
         )
+
+        # Add security group rule for EC2 to access RDS
+        db_instance.connections.allow_default_port_from(webServerInstance, "Allow EC2 to connect to RDS")
+
+        # Add security group rule for Lambda to access RDS
+        db_instance.connections.allow_default_port_from(lambda_function, "Allow Lambda to connect to RDS")
 
         # Lambda s3 trigger
         bucket.add_event_notification(
