@@ -97,7 +97,7 @@ class MyStack(cdk.Stack):
         )
 
         # Create an EC2 instance
-        webServerInstance = ec2.Instance(self, "webServer",
+        webServerInstance = ec2.Instance(self, "WebServer",
             instance_type=ec2.InstanceType("t2.micro"),
             machine_image=ec2.AmazonLinuxImage(
                 generation=ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023  # Use Amazon Linux 2023
@@ -111,13 +111,13 @@ class MyStack(cdk.Stack):
             iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3ReadOnlyAccess")
         )
         webServerInstance.add_user_data(
-            f"echo 'PG_HOST={db_endpoint}' >> /etc/environment",
-            f"echo 'PG_PORT={db_port}' >> /etc/environment",
-            f"echo 'PG_DATABASE={db_name}' >> /etc/environment",
-            f"echo 'PG_USER={db_user}' >> /etc/environment",
-            f"echo 'PG_PASSWORD={db_password}' >> /etc/environment",
+            f"echo 'PG_HOST={db_endpoint}' >> /app/remixjs/.env",
+            f"echo 'PG_PORT={db_port}' >> /app/remixjs/.env",
+            f"echo 'PG_DATABASE={db_name}' >> /app/remixjs/.env",
+            f"echo 'PG_USER={db_user}' >> /app/remixjs/.env",
+            f"echo 'PG_PASSWORD={db_password}' >> /app/remixjs/.env",
             "sudo yum install -y gcc-c++ make",
-            "curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -",  # Install Node.js 18.x
+            "curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -", 
             "sudo yum install nodejs -y",
             "sudo yum install -y nodejs@latest",  # Install Node.js
             "sudo npm install -g npm@latest",  # Update npm to the latest version
@@ -147,7 +147,7 @@ class MyStack(cdk.Stack):
         )
 
          # Create an EC2 instance
-        crawlerInstance = ec2.Instance(self, "crawler",
+        crawlerInstance = ec2.Instance(self, "Crawler",
             instance_type=ec2.InstanceType("t2.micro"),
             machine_image=ec2.AmazonLinuxImage(),
             vpc=vpc,
@@ -159,6 +159,7 @@ class MyStack(cdk.Stack):
             f"echo 'REDIS_HOST={redis_cluster.attr_redis_endpoint_address}' >> /etc/environment",
             f"echo 'REDIS_PORT=6379' >> /etc/environment", 
             f"echo 'S3_BUCKET_NAME={bucket.bucket_name}' >> /etc/environment",
+            "source /etc/environment",
             "sudo yum install -y python38",
             "sudo python3 -m pip install --upgrade pip",
             "sudo yum install git -y",
@@ -166,7 +167,7 @@ class MyStack(cdk.Stack):
             "cd app/crawler",
             "python3 -m pip install -r requirements.txt",
             "cd src",
-            "/usr/local/bin/scrapy crawl crawl > /var/log/scrapy_output.log 2>&1"
+            "env REDIS_HOST=${REDIS_HOST} REDIS_PORT=${REDIS_PORT} S3_BUCKET_NAME=${S3_BUCKET_NAME} /usr/local/bin/scrapy crawl crawl > /var/log/scrapy_output.log 2>&1"
         )
         crawlerInstance.role.add_managed_policy(
             iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3FullAccess")
