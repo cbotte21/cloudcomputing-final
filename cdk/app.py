@@ -111,11 +111,6 @@ class MyStack(cdk.Stack):
             iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3ReadOnlyAccess")
         )
         webServerInstance.add_user_data(
-            f"echo 'PG_HOST={db_endpoint}' >> /app/remixjs/.env",
-            f"echo 'PG_PORT={db_port}' >> /app/remixjs/.env",
-            f"echo 'PG_DATABASE={db_name}' >> /app/remixjs/.env",
-            f"echo 'PG_USER={db_user}' >> /app/remixjs/.env",
-            f"echo 'PG_PASSWORD={db_password}' >> /app/remixjs/.env",
             "sudo yum install -y gcc-c++ make",
             "curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -", 
             "sudo yum install nodejs -y",
@@ -124,6 +119,12 @@ class MyStack(cdk.Stack):
             "sudo yum install git -y",
             "git clone https://github.com/cbotte21/cloudcomputing-final app",
             "cd app/remixjs",
+
+            "echo 'PG_HOST={db_endpoint}' | sudo tee -a .env",
+            "echo 'PG_PORT={db_port}' | sudo tee -a .env",
+            "echo 'PG_DATABASE={db_name}' | sudo tee -a .env",
+            "echo 'PG_USER={db_user}' | sudo tee -a .env",
+            "echo 'PG_PASSWORD={db_password}' | sudo tee -a .env",
             "npm install",
             "npm run build > /var/log/remixjs_build_output.log 2>&1",
             "npm run start > /var/log/remixjs_output.log 2>&1"

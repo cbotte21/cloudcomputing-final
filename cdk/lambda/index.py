@@ -7,7 +7,7 @@ from psycopg2.extras import DictCursor  # For Dict-like cursor behavior
 
 BUCKET_NAME = "searchengine-data"
 
-def lambda_handler(event, context):
+def handler(event, context):
     # Log the event to check its structure
     print("Received event:", event)
     
