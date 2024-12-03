@@ -6,5 +6,4 @@ export const pool = new Pool({
     password: process.env.PG_PASSWORD,
     database: process.env.PG_DATABASE,
     port: parseInt(process.env.PG_PORT || "5432"),
-    ssl: true
   });
