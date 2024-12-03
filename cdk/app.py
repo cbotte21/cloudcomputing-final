@@ -52,9 +52,6 @@ class MyStack(cdk.Stack):
             allocated_storage=20,
             max_allocated_storage=100,
             publicly_accessible=False,
-            vpc_subnets={
-                "subnet_type": ec2.SubnetType.PRIVATE_WITH_EGRESS
-            },
             database_name=db_name,
             credentials = rds.Credentials.from_password(db_user, SecretValue.unsafe_plain_text(db_password)),
         )
