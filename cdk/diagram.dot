@@ -1,0 +1,221 @@
+digraph "Diagram" {
+  splines = "ortho";
+  pad = "1.0";
+  nodesep = "0.60";
+  ranksep = "0.75";
+  fontname = "Sans-Serif";
+  fontsize = "15";
+  dpi = "200";
+  rankdir = "BT";
+  compound = "true";
+  fontcolor = "#222222";
+  edge [
+    color = "#D5871488",
+    penwidth = 2,
+    arrowhead = "dot",
+    arrowtail = "dot",
+  ];
+  node [
+    shape = "box",
+    style = "rounded",
+    fixedsize = true,
+    width = 1.7,
+    height = 1.7,
+    labelloc = "c",
+    imagescale = true,
+    fontname = "Sans-Serif",
+    fontsize = 8,
+    margin = 8,
+  ];
+  subgraph "SearchEngineStack" {
+    subgraph "cluster-SubGraph.SearchEngineStack" {
+      graph [
+        label = "SearchEngineStack",
+        labelloc = "b",
+        labeljust = "l",
+        margin = "10",
+        fontsize = "16",
+        penwidth = "2",
+        pencolor = "#888888",
+        style = "filled,rounded",
+        fillcolor = "#e4e4e4",
+      ];
+      "SearchEngineStack/searchengine-vpc" [
+        label = " searchengine-vpc",
+        fontsize = 12,
+        image = "/Users/kim/node_modules/cdk-dia/icons/aws/Service/Arch_Networking-Content/64/Arch_Amazon-Virtual-Private-Cloud_64@5x.png",
+        imagescale = "true",
+        imagepos = "tc",
+        penwidth = "0",
+        shape = "node",
+        fixedsize = "true",
+        labelloc = "b",
+        width = 2,
+        height = 2.266,
+      ];
+      "SearchEngineStack/searchengine-data" [
+        label = " searchengine-data",
+        fontsize = 12,
+        image = "/Users/kim/node_modules/cdk-dia/icons/aws/Service/Arch_Storage/64/Arch_Amazon-S3-Standard_64@5x.png",
+        imagescale = "true",
+        imagepos = "tc",
+        penwidth = "0",
+        shape = "node",
+        fixedsize = "true",
+        labelloc = "b",
+        width = 2,
+        height = 2.266,
+      ];
+      "SearchEngineStack/RDSParameterGroup" [
+        label = " RDSParameterGroup",
+        fontsize = 12,
+        image = "/Users/kim/node_modules/cdk-dia/icons/aws/Service/Arch_Database/64/Arch_Amazon-RDS_64@5x.png",
+        imagescale = "true",
+        imagepos = "tc",
+        penwidth = "0",
+        shape = "node",
+        fixedsize = "true",
+        labelloc = "b",
+        width = 1.2,
+        height = 1.466,
+      ];
+      "SearchEngineStack/searchengine_database" [
+        label = "\nsearchengine_database",
+        fontsize = 12,
+        image = "/Users/kim/node_modules/cdk-dia/icons/aws/Resource/Res_Compute/Res_48_Dark/Res_Amazon-EC2_T3-Instance_48_Dark.png",
+        imagescale = "true",
+        imagepos = "tc",
+        penwidth = "0",
+        shape = "node",
+        fixedsize = "true",
+        labelloc = "b",
+        width = 2,
+        height = 2.4819999999999998,
+      ];
+      "SearchEngineStack/RedisSG" [
+        label = " RedisSG",
+        fontsize = 12,
+        image = "/Users/kim/node_modules/cdk-dia/icons/aws/security_group.png",
+        imagescale = "true",
+        imagepos = "tc",
+        penwidth = "0",
+        shape = "node",
+        fixedsize = "true",
+        labelloc = "b",
+        width = 2,
+        height = 2.266,
+      ];
+      "SearchEngineStack/RedisSubnetGroup" [
+        label = " ELASTICACHE\nSUBNETGROUP\nRedisSubnetGroup",
+        fontsize = 12,
+      ];
+      "SearchEngineStack/searchengine-redis" [
+        label = " ELASTICACHE\nCACHECLUSTER\nsearchengine-redis",
+        fontsize = 12,
+      ];
+      "SearchEngineStack/webServer" [
+        label = " webServer",
+        fontsize = 12,
+        image = "/Users/kim/node_modules/cdk-dia/icons/aws/Resource/Res_Compute/Res_48_Dark/Res_Amazon-EC2_T2-Instance_48_Dark.png",
+        imagescale = "true",
+        imagepos = "tc",
+        penwidth = "0",
+        shape = "node",
+        fixedsize = "true",
+        labelloc = "b",
+        width = 2,
+        height = 2.266,
+      ];
+      "SearchEngineStack/Crawler" [
+        label = " Crawler",
+        fontsize = 12,
+        image = "/Users/kim/node_modules/cdk-dia/icons/aws/Resource/Res_Compute/Res_48_Dark/Res_Amazon-EC2_T2-Instance_48_Dark.png",
+        imagescale = "true",
+        imagepos = "tc",
+        penwidth = "0",
+        shape = "node",
+        fixedsize = "true",
+        labelloc = "b",
+        width = 2,
+        height = 2.266,
+      ];
+      "SearchEngineStack/FileParser" [
+        label = " FileParser",
+        fontsize = 12,
+        image = "/Users/kim/node_modules/cdk-dia/icons/aws/Service/Arch_Compute/64/Arch_AWS-Lambda_64@5x.png",
+        imagescale = "true",
+        imagepos = "tc",
+        penwidth = "0",
+        shape = "node",
+        fixedsize = "true",
+        labelloc = "b",
+        width = 2,
+        height = 2.266,
+      ];
+      "SearchEngineStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role" [
+        label = " Role",
+        fontsize = 12,
+        image = "/Users/kim/node_modules/cdk-dia/icons/aws/Service/Arch_Security-Identity-Compliance/64/Arch_AWS-Identity-and-Access-Management_64@5x.png",
+        imagescale = "true",
+        imagepos = "tc",
+        penwidth = "0",
+        shape = "node",
+        fixedsize = "true",
+        labelloc = "b",
+        width = 1.2,
+        height = 1.466,
+      ];
+    }
+  }
+  "SearchEngineStack/searchengine-data" -> "SearchEngineStack/FileParser" [
+    dir = "both",
+  ];
+  "SearchEngineStack/searchengine_database" -> "SearchEngineStack/searchengine-vpc" [
+    dir = "both",
+  ];
+  "SearchEngineStack/searchengine_database" -> "SearchEngineStack/RDSParameterGroup" [
+    dir = "both",
+  ];
+  "SearchEngineStack/searchengine_database" -> "SearchEngineStack/webServer" [
+    dir = "both",
+  ];
+  "SearchEngineStack/searchengine_database" -> "SearchEngineStack/FileParser" [
+    dir = "both",
+  ];
+  "SearchEngineStack/RedisSG" -> "SearchEngineStack/searchengine-vpc" [
+    dir = "both",
+  ];
+  "SearchEngineStack/RedisSubnetGroup" -> "SearchEngineStack/searchengine-vpc" [
+    dir = "both",
+  ];
+  "SearchEngineStack/searchengine-redis" -> "SearchEngineStack/RedisSubnetGroup" [
+    dir = "both",
+  ];
+  "SearchEngineStack/searchengine-redis" -> "SearchEngineStack/RedisSG" [
+    dir = "both",
+  ];
+  "SearchEngineStack/webServer" -> "SearchEngineStack/searchengine-vpc" [
+    dir = "both",
+  ];
+  "SearchEngineStack/webServer" -> "SearchEngineStack/searchengine_database" [
+    dir = "both",
+  ];
+  "SearchEngineStack/Crawler" -> "SearchEngineStack/searchengine-vpc" [
+    dir = "both",
+  ];
+  "SearchEngineStack/Crawler" -> "SearchEngineStack/searchengine-redis" [
+    dir = "both",
+  ];
+  "SearchEngineStack/Crawler" -> "SearchEngineStack/searchengine-data" [
+    dir = "both",
+  ];
+  "SearchEngineStack/FileParser" -> "SearchEngineStack/searchengine-data" [
+    dir = "both",
+  ];
+  "SearchEngineStack/FileParser" -> "SearchEngineStack/searchengine-vpc" [
+    dir = "both",
+  ];
+  "SearchEngineStack/FileParser" -> "SearchEngineStack/searchengine_database" [
+    dir = "both",
+  ];
+}

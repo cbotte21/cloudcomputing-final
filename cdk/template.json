@@ -1,0 +1,1060 @@
+Resources:
+  searchenginevpc07F282BF:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: SearchEngineStack/searchengine-vpc
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-vpc/Resource
+  searchenginevpcpublicsubnetSubnet1SubnetCD83FD4C:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: us-east-1a
+      CidrBlock: 10.0.0.0/24
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: public-subnet
+        - Key: aws-cdk:subnet-type
+          Value: Public
+        - Key: Name
+          Value: SearchEngineStack/searchengine-vpc/public-subnetSubnet1
+      VpcId:
+        Ref: searchenginevpc07F282BF
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-vpc/public-subnetSubnet1/Subnet
+  searchenginevpcpublicsubnetSubnet1RouteTableD7F867B0:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: SearchEngineStack/searchengine-vpc/public-subnetSubnet1
+      VpcId:
+        Ref: searchenginevpc07F282BF
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-vpc/public-subnetSubnet1/RouteTable
+  searchenginevpcpublicsubnetSubnet1RouteTableAssociationA41FAE72:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: searchenginevpcpublicsubnetSubnet1RouteTableD7F867B0
+      SubnetId:
+        Ref: searchenginevpcpublicsubnetSubnet1SubnetCD83FD4C
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-vpc/public-subnetSubnet1/RouteTableAssociation
+  searchenginevpcpublicsubnetSubnet1DefaultRouteB7988B52:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: searchenginevpcIGW19B11593
+      RouteTableId:
+        Ref: searchenginevpcpublicsubnetSubnet1RouteTableD7F867B0
+    DependsOn:
+      - searchenginevpcVPCGW75549EFB
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-vpc/public-subnetSubnet1/DefaultRoute
+  searchenginevpcpublicsubnetSubnet1EIP0A5718D3:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: SearchEngineStack/searchengine-vpc/public-subnetSubnet1
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-vpc/public-subnetSubnet1/EIP
+  searchenginevpcpublicsubnetSubnet1NATGatewayB56011BF:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId:
+        Fn::GetAtt:
+          - searchenginevpcpublicsubnetSubnet1EIP0A5718D3
+          - AllocationId
+      SubnetId:
+        Ref: searchenginevpcpublicsubnetSubnet1SubnetCD83FD4C
+      Tags:
+        - Key: Name
+          Value: SearchEngineStack/searchengine-vpc/public-subnetSubnet1
+    DependsOn:
+      - searchenginevpcpublicsubnetSubnet1DefaultRouteB7988B52
+      - searchenginevpcpublicsubnetSubnet1RouteTableAssociationA41FAE72
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-vpc/public-subnetSubnet1/NATGateway
+  searchenginevpcpublicsubnetSubnet2SubnetF3E49534:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: us-east-1b
+      CidrBlock: 10.0.1.0/24
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: public-subnet
+        - Key: aws-cdk:subnet-type
+          Value: Public
+        - Key: Name
+          Value: SearchEngineStack/searchengine-vpc/public-subnetSubnet2
+      VpcId:
+        Ref: searchenginevpc07F282BF
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-vpc/public-subnetSubnet2/Subnet
+  searchenginevpcpublicsubnetSubnet2RouteTable1A7A8922:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: SearchEngineStack/searchengine-vpc/public-subnetSubnet2
+      VpcId:
+        Ref: searchenginevpc07F282BF
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-vpc/public-subnetSubnet2/RouteTable
+  searchenginevpcpublicsubnetSubnet2RouteTableAssociationB76E6A5D:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: searchenginevpcpublicsubnetSubnet2RouteTable1A7A8922
+      SubnetId:
+        Ref: searchenginevpcpublicsubnetSubnet2SubnetF3E49534
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-vpc/public-subnetSubnet2/RouteTableAssociation
+  searchenginevpcpublicsubnetSubnet2DefaultRoute7FD78977:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: searchenginevpcIGW19B11593
+      RouteTableId:
+        Ref: searchenginevpcpublicsubnetSubnet2RouteTable1A7A8922
+    DependsOn:
+      - searchenginevpcVPCGW75549EFB
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-vpc/public-subnetSubnet2/DefaultRoute
+  searchenginevpcprivatesubnetSubnet1Subnet46591639:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: us-east-1a
+      CidrBlock: 10.0.2.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: private-subnet
+        - Key: aws-cdk:subnet-type
+          Value: Private
+        - Key: Name
+          Value: SearchEngineStack/searchengine-vpc/private-subnetSubnet1
+      VpcId:
+        Ref: searchenginevpc07F282BF
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-vpc/private-subnetSubnet1/Subnet
+  searchenginevpcprivatesubnetSubnet1RouteTable8E24AE0D:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: SearchEngineStack/searchengine-vpc/private-subnetSubnet1
+      VpcId:
+        Ref: searchenginevpc07F282BF
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-vpc/private-subnetSubnet1/RouteTable
+  searchenginevpcprivatesubnetSubnet1RouteTableAssociation6FF2DE61:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: searchenginevpcprivatesubnetSubnet1RouteTable8E24AE0D
+      SubnetId:
+        Ref: searchenginevpcprivatesubnetSubnet1Subnet46591639
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-vpc/private-subnetSubnet1/RouteTableAssociation
+  searchenginevpcprivatesubnetSubnet1DefaultRouteC1364812:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: searchenginevpcpublicsubnetSubnet1NATGatewayB56011BF
+      RouteTableId:
+        Ref: searchenginevpcprivatesubnetSubnet1RouteTable8E24AE0D
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-vpc/private-subnetSubnet1/DefaultRoute
+  searchenginevpcprivatesubnetSubnet2Subnet710C0835:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: us-east-1b
+      CidrBlock: 10.0.3.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: private-subnet
+        - Key: aws-cdk:subnet-type
+          Value: Private
+        - Key: Name
+          Value: SearchEngineStack/searchengine-vpc/private-subnetSubnet2
+      VpcId:
+        Ref: searchenginevpc07F282BF
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-vpc/private-subnetSubnet2/Subnet
+  searchenginevpcprivatesubnetSubnet2RouteTable864DC25D:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: SearchEngineStack/searchengine-vpc/private-subnetSubnet2
+      VpcId:
+        Ref: searchenginevpc07F282BF
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-vpc/private-subnetSubnet2/RouteTable
+  searchenginevpcprivatesubnetSubnet2RouteTableAssociation36C424D3:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: searchenginevpcprivatesubnetSubnet2RouteTable864DC25D
+      SubnetId:
+        Ref: searchenginevpcprivatesubnetSubnet2Subnet710C0835
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-vpc/private-subnetSubnet2/RouteTableAssociation
+  searchenginevpcprivatesubnetSubnet2DefaultRouteEA11075F:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: searchenginevpcpublicsubnetSubnet1NATGatewayB56011BF
+      RouteTableId:
+        Ref: searchenginevpcprivatesubnetSubnet2RouteTable864DC25D
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-vpc/private-subnetSubnet2/DefaultRoute
+  searchenginevpcIGW19B11593:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: SearchEngineStack/searchengine-vpc
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-vpc/IGW
+  searchenginevpcVPCGW75549EFB:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId:
+        Ref: searchenginevpcIGW19B11593
+      VpcId:
+        Ref: searchenginevpc07F282BF
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-vpc/VPCGW
+  searchenginevpcRestrictDefaultSecurityGroupCustomResource24F8D89F:
+    Type: Custom::VpcRestrictDefaultSG
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E
+          - Arn
+      DefaultSecurityGroupId:
+        Fn::GetAtt:
+          - searchenginevpc07F282BF
+          - DefaultSecurityGroup
+      Account: "620339869704"
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-vpc/RestrictDefaultSecurityGroupCustomResource/Default
+  CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+      ManagedPolicyArns:
+        - Fn::Sub: arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: Inline
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:AuthorizeSecurityGroupIngress
+                  - ec2:AuthorizeSecurityGroupEgress
+                  - ec2:RevokeSecurityGroupIngress
+                  - ec2:RevokeSecurityGroupEgress
+                Resource:
+                  - Fn::Join:
+                      - ""
+                      - - arn:aws:ec2:us-east-1:620339869704:security-group/
+                        - Fn::GetAtt:
+                            - searchenginevpc07F282BF
+                            - DefaultSecurityGroup
+    Metadata:
+      aws:cdk:path: SearchEngineStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role
+  CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: cdk-hnb659fds-assets-620339869704-us-east-1
+        S3Key: 7fa1e366ee8a9ded01fc355f704cff92bfd179574e6f9cfee800a3541df1b200.zip
+      Timeout: 900
+      MemorySize: 128
+      Handler: __entrypoint__.handler
+      Role:
+        Fn::GetAtt:
+          - CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0
+          - Arn
+      Runtime: nodejs20.x
+      Description: Lambda function for removing all inbound/outbound rules from the VPC default security group
+    DependsOn:
+      - CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0
+    Metadata:
+      aws:cdk:path: SearchEngineStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler
+      aws:asset:path: asset.7fa1e366ee8a9ded01fc355f704cff92bfd179574e6f9cfee800a3541df1b200
+      aws:asset:property: Code
+  searchenginedataB8171A66:
+    Type: AWS::S3::Bucket
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-data/Resource
+  searchenginedataNotifications15C48177:
+    Type: Custom::S3BucketNotifications
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+          - BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691
+          - Arn
+      BucketName:
+        Ref: searchenginedataB8171A66
+      NotificationConfiguration:
+        LambdaFunctionConfigurations:
+          - Events:
+              - s3:ObjectCreated:*
+            LambdaFunctionArn:
+              Fn::GetAtt:
+                - FileParserC40DDE93
+                - Arn
+      Managed: true
+      SkipDestinationValidation: false
+    DependsOn:
+      - searchenginedataAllowBucketNotificationsToSearchEngineStackFileParserC8090758BA430083
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-data/Notifications/Resource
+  searchenginedataAllowBucketNotificationsToSearchEngineStackFileParserC8090758BA430083:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - FileParserC40DDE93
+          - Arn
+      Principal: s3.amazonaws.com
+      SourceAccount: "620339869704"
+      SourceArn:
+        Fn::GetAtt:
+          - searchenginedataB8171A66
+          - Arn
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-data/AllowBucketNotificationsToSearchEngineStackFileParserC8090758
+  RDSParameterGroup973BA941:
+    Type: AWS::RDS::DBParameterGroup
+    Properties:
+      Description: Parameter group for postgres16
+      Family: postgres16
+      Parameters:
+        rds.force_ssl: "0"
+    Metadata:
+      aws:cdk:path: SearchEngineStack/RDSParameterGroup/Resource
+  searchenginedatabaseSubnetGroupBEE9E5B5:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnet group for searchengine_database database
+      SubnetIds:
+        - Ref: searchenginevpcprivatesubnetSubnet1Subnet46591639
+        - Ref: searchenginevpcprivatesubnetSubnet2Subnet710C0835
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine_database/SubnetGroup/Default
+  searchenginedatabaseSecurityGroup6471EA08:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for searchengine_database database
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId:
+        Ref: searchenginevpc07F282BF
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine_database/SecurityGroup/Resource
+  searchenginedatabaseSecurityGroupfromSearchEngineStackwebServerInstanceSecurityGroupEDF100B3IndirectPortE70D45A5:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Allow EC2 to connect to RDS
+      FromPort:
+        Fn::GetAtt:
+          - searchenginedatabase670E561B
+          - Endpoint.Port
+      GroupId:
+        Fn::GetAtt:
+          - searchenginedatabaseSecurityGroup6471EA08
+          - GroupId
+      IpProtocol: tcp
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - webServerInstanceSecurityGroupACAB91CB
+          - GroupId
+      ToPort:
+        Fn::GetAtt:
+          - searchenginedatabase670E561B
+          - Endpoint.Port
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine_database/SecurityGroup/from SearchEngineStackwebServerInstanceSecurityGroupEDF100B3:{IndirectPort}
+  searchenginedatabaseSecurityGroupfromSearchEngineStackFileParserSecurityGroupC6333E5AIndirectPort498C6E2C:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      Description: Allow Lambda to connect to RDS
+      FromPort:
+        Fn::GetAtt:
+          - searchenginedatabase670E561B
+          - Endpoint.Port
+      GroupId:
+        Fn::GetAtt:
+          - searchenginedatabaseSecurityGroup6471EA08
+          - GroupId
+      IpProtocol: tcp
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - FileParserSecurityGroup1146956F
+          - GroupId
+      ToPort:
+        Fn::GetAtt:
+          - searchenginedatabase670E561B
+          - Endpoint.Port
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine_database/SecurityGroup/from SearchEngineStackFileParserSecurityGroupC6333E5A:{IndirectPort}
+  searchenginedatabase670E561B:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: "20"
+      CopyTagsToSnapshot: true
+      DBInstanceClass: db.t3.micro
+      DBName: searchengine_database
+      DBParameterGroupName:
+        Ref: RDSParameterGroup973BA941
+      DBSubnetGroupName:
+        Ref: searchenginedatabaseSubnetGroupBEE9E5B5
+      Engine: postgres
+      EngineVersion: "16.3"
+      MasterUserPassword: Superpassword123
+      MasterUsername: searchengineuser
+      MaxAllocatedStorage: 100
+      MultiAZ: false
+      PubliclyAccessible: false
+      StorageType: gp2
+      VPCSecurityGroups:
+        - Fn::GetAtt:
+            - searchenginedatabaseSecurityGroup6471EA08
+            - GroupId
+    UpdateReplacePolicy: Snapshot
+    DeletionPolicy: Snapshot
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine_database/Resource
+  RedisSGEA80AC17:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow Redis access from within the VPC
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIp:
+            Fn::GetAtt:
+              - searchenginevpc07F282BF
+              - CidrBlock
+          Description: Allow Redis traffic from VPC
+          FromPort: 6379
+          IpProtocol: tcp
+          ToPort: 6379
+      VpcId:
+        Ref: searchenginevpc07F282BF
+    Metadata:
+      aws:cdk:path: SearchEngineStack/RedisSG/Resource
+  RedisSubnetGroup:
+    Type: AWS::ElastiCache::SubnetGroup
+    Properties:
+      Description: Subnet group for Redis
+      SubnetIds:
+        - Ref: searchenginevpcprivatesubnetSubnet1Subnet46591639
+        - Ref: searchenginevpcprivatesubnetSubnet2Subnet710C0835
+    Metadata:
+      aws:cdk:path: SearchEngineStack/RedisSubnetGroup
+  searchengineredis:
+    Type: AWS::ElastiCache::CacheCluster
+    Properties:
+      CacheNodeType: cache.t3.micro
+      CacheSubnetGroupName:
+        Ref: RedisSubnetGroup
+      Engine: redis
+      NumCacheNodes: 1
+      VpcSecurityGroupIds:
+        - Fn::GetAtt:
+            - RedisSGEA80AC17
+            - GroupId
+    Metadata:
+      aws:cdk:path: SearchEngineStack/searchengine-redis
+  webServerInstanceSecurityGroupACAB91CB:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: SearchEngineStack/webServer/InstanceSecurityGroup
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow SSH access from anywhere
+          FromPort: 22
+          IpProtocol: tcp
+          ToPort: 22
+        - CidrIp: 0.0.0.0/0
+          Description: Allow HTTP access from anywhere
+          FromPort: 80
+          IpProtocol: tcp
+          ToPort: 80
+      Tags:
+        - Key: Name
+          Value: SearchEngineStack/webServer
+      VpcId:
+        Ref: searchenginevpc07F282BF
+    Metadata:
+      aws:cdk:path: SearchEngineStack/webServer/InstanceSecurityGroup/Resource
+  webServerInstanceRole4475E03E:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/AmazonS3ReadOnlyAccess
+      Tags:
+        - Key: Name
+          Value: SearchEngineStack/webServer
+    Metadata:
+      aws:cdk:path: SearchEngineStack/webServer/InstanceRole/Resource
+  webServerInstanceRoleDefaultPolicyC41D73D6:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - elasticache:Connect
+              - rds:Connect
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: webServerInstanceRoleDefaultPolicyC41D73D6
+      Roles:
+        - Ref: webServerInstanceRole4475E03E
+    Metadata:
+      aws:cdk:path: SearchEngineStack/webServer/InstanceRole/DefaultPolicy/Resource
+  webServerInstanceProfileF8B53603:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - Ref: webServerInstanceRole4475E03E
+    Metadata:
+      aws:cdk:path: SearchEngineStack/webServer/InstanceProfile
+  webServer18912233:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: us-east-1a
+      IamInstanceProfile:
+        Ref: webServerInstanceProfileF8B53603
+      ImageId:
+        Ref: SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter
+      InstanceType: t2.micro
+      KeyName: kt
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: "0"
+          GroupSet:
+            - Fn::GetAtt:
+                - webServerInstanceSecurityGroupACAB91CB
+                - GroupId
+          SubnetId:
+            Ref: searchenginevpcpublicsubnetSubnet1SubnetCD83FD4C
+      Tags:
+        - Key: Name
+          Value: SearchEngineStack/webServer
+      UserData:
+        Fn::Base64:
+          Fn::Join:
+            - ""
+            - - |-
+                #!/bin/bash
+                sudo yum install -y gcc-c++ make
+                curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
+                sudo yum install nodejs -y
+                sudo yum install -y nodejs@latest
+                sudo npm install -g npm@latest
+                sudo yum install git -y
+                git clone https://github.com/cbotte21/cloudcomputing-final app
+                cd app/remixjs
+                npm install
+                npm run build > /var/log/remixjs_build_output.log 2>&1
+                export PG_HOST=
+              - Fn::GetAtt:
+                  - searchenginedatabase670E561B
+                  - Endpoint.Address
+              - |-
+                
+                export PG_PORT=
+              - Fn::GetAtt:
+                  - searchenginedatabase670E561B
+                  - Endpoint.Port
+              - |-
+                
+                export PG_DATABASE=searchengine_database
+                export PG_USER=searchengineuser
+                export PG_PASSWORD=Superpassword123
+                npm run start > /var/log/remixjs_output.log 2>&1
+    DependsOn:
+      - searchenginevpcpublicsubnetSubnet1DefaultRouteB7988B52
+      - searchenginevpcpublicsubnetSubnet1RouteTableAssociationA41FAE72
+      - searchenginevpcpublicsubnetSubnet2DefaultRoute7FD78977
+      - searchenginevpcpublicsubnetSubnet2RouteTableAssociationB76E6A5D
+      - webServerInstanceRoleDefaultPolicyC41D73D6
+      - webServerInstanceRole4475E03E
+    Metadata:
+      aws:cdk:path: SearchEngineStack/webServer/Resource
+  CrawlerInstanceSecurityGroupD56FFEE9:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: SearchEngineStack/Crawler/InstanceSecurityGroup
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow SSH access from anywhere
+          FromPort: 22
+          IpProtocol: tcp
+          ToPort: 22
+      Tags:
+        - Key: Name
+          Value: SearchEngineStack/Crawler
+      VpcId:
+        Ref: searchenginevpc07F282BF
+    Metadata:
+      aws:cdk:path: SearchEngineStack/Crawler/InstanceSecurityGroup/Resource
+  CrawlerInstanceRoleD60378B1:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/AmazonS3FullAccess
+      Tags:
+        - Key: Name
+          Value: SearchEngineStack/Crawler
+    Metadata:
+      aws:cdk:path: SearchEngineStack/Crawler/InstanceRole/Resource
+  CrawlerInstanceRoleDefaultPolicyD53C4B0F:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: elasticache:Connect
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: CrawlerInstanceRoleDefaultPolicyD53C4B0F
+      Roles:
+        - Ref: CrawlerInstanceRoleD60378B1
+    Metadata:
+      aws:cdk:path: SearchEngineStack/Crawler/InstanceRole/DefaultPolicy/Resource
+  CrawlerInstanceProfileC99E54B8:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - Ref: CrawlerInstanceRoleD60378B1
+    Metadata:
+      aws:cdk:path: SearchEngineStack/Crawler/InstanceProfile
+  Crawler8C39B76C:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: us-east-1a
+      IamInstanceProfile:
+        Ref: CrawlerInstanceProfileC99E54B8
+      ImageId:
+        Ref: SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter
+      InstanceType: t2.micro
+      KeyName: kt
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: "0"
+          GroupSet:
+            - Fn::GetAtt:
+                - CrawlerInstanceSecurityGroupD56FFEE9
+                - GroupId
+          SubnetId:
+            Ref: searchenginevpcpublicsubnetSubnet1SubnetCD83FD4C
+      Tags:
+        - Key: Name
+          Value: SearchEngineStack/Crawler
+      UserData:
+        Fn::Base64:
+          Fn::Join:
+            - ""
+            - - |-
+                #!/bin/bash
+                echo 'REDIS_HOST=
+              - Fn::GetAtt:
+                  - searchengineredis
+                  - RedisEndpoint.Address
+              - |-
+                ' >> /etc/environment
+                echo 'REDIS_PORT=6379' >> /etc/environment
+                echo 'S3_BUCKET_NAME=
+              - Ref: searchenginedataB8171A66
+              - |-
+                ' >> /etc/environment
+                source /etc/environment
+                sudo yum install -y python38
+                sudo python3 -m pip install --upgrade pip
+                sudo yum install git -y
+                git clone https://github.com/cbotte21/cloudcomputing-final app
+                cd app/crawler
+                python3 -m pip install -r requirements.txt
+                cd src
+                env REDIS_HOST=${REDIS_HOST} REDIS_PORT=${REDIS_PORT} S3_BUCKET_NAME=${S3_BUCKET_NAME} /usr/local/bin/scrapy crawl crawl > /var/log/scrapy_output.log 2>&1
+    DependsOn:
+      - CrawlerInstanceRoleDefaultPolicyD53C4B0F
+      - CrawlerInstanceRoleD60378B1
+      - searchenginevpcpublicsubnetSubnet1DefaultRouteB7988B52
+      - searchenginevpcpublicsubnetSubnet1RouteTableAssociationA41FAE72
+      - searchenginevpcpublicsubnetSubnet2DefaultRoute7FD78977
+      - searchenginevpcpublicsubnetSubnet2RouteTableAssociationB76E6A5D
+    Metadata:
+      aws:cdk:path: SearchEngineStack/Crawler/Resource
+  FileParserServiceRoleCD32C150:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+    DependsOn:
+      - searchenginevpcprivatesubnetSubnet1DefaultRouteC1364812
+      - searchenginevpcprivatesubnetSubnet1RouteTableAssociation6FF2DE61
+      - searchenginevpcprivatesubnetSubnet2DefaultRouteEA11075F
+      - searchenginevpcprivatesubnetSubnet2RouteTableAssociation36C424D3
+    Metadata:
+      aws:cdk:path: SearchEngineStack/FileParser/ServiceRole/Resource
+  FileParserServiceRoleDefaultPolicy7B935B80:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - s3:GetObject
+              - s3:PutObject
+            Effect: Allow
+            Resource:
+              Fn::Join:
+                - ""
+                - - Fn::GetAtt:
+                      - searchenginedataB8171A66
+                      - Arn
+                  - /*
+        Version: "2012-10-17"
+      PolicyName: FileParserServiceRoleDefaultPolicy7B935B80
+      Roles:
+        - Ref: FileParserServiceRoleCD32C150
+    DependsOn:
+      - searchenginevpcprivatesubnetSubnet1DefaultRouteC1364812
+      - searchenginevpcprivatesubnetSubnet1RouteTableAssociation6FF2DE61
+      - searchenginevpcprivatesubnetSubnet2DefaultRouteEA11075F
+      - searchenginevpcprivatesubnetSubnet2RouteTableAssociation36C424D3
+    Metadata:
+      aws:cdk:path: SearchEngineStack/FileParser/ServiceRole/DefaultPolicy/Resource
+  FileParserSecurityGroup1146956F:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Automatic security group for Lambda Function SearchEngineStackFileParserC8090758
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId:
+        Ref: searchenginevpc07F282BF
+    DependsOn:
+      - searchenginevpcprivatesubnetSubnet1DefaultRouteC1364812
+      - searchenginevpcprivatesubnetSubnet1RouteTableAssociation6FF2DE61
+      - searchenginevpcprivatesubnetSubnet2DefaultRouteEA11075F
+      - searchenginevpcprivatesubnetSubnet2RouteTableAssociation36C424D3
+    Metadata:
+      aws:cdk:path: SearchEngineStack/FileParser/SecurityGroup/Resource
+  FileParserC40DDE93:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: cdk-hnb659fds-assets-620339869704-us-east-1
+        S3Key: 6df36e04658325a9cd0b547d3cf6ee2c1fb75cbc20be4fa2fc9f2d2724406e4d.zip
+      Environment:
+        Variables:
+          PG_HOST:
+            Fn::GetAtt:
+              - searchenginedatabase670E561B
+              - Endpoint.Address
+          PG_PORT:
+            Fn::GetAtt:
+              - searchenginedatabase670E561B
+              - Endpoint.Port
+          PG_DATABASE: searchengine_database
+          PG_USER: searchengineuser
+          PG_PASSWORD: Superpassword123
+          S3_BUCKET_NAME:
+            Ref: searchenginedataB8171A66
+      Handler: index.handler
+      MemorySize: 256
+      Role:
+        Fn::GetAtt:
+          - FileParserServiceRoleCD32C150
+          - Arn
+      Runtime: python3.8
+      Timeout: 5
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::GetAtt:
+              - FileParserSecurityGroup1146956F
+              - GroupId
+        SubnetIds:
+          - Ref: searchenginevpcprivatesubnetSubnet1Subnet46591639
+          - Ref: searchenginevpcprivatesubnetSubnet2Subnet710C0835
+    DependsOn:
+      - FileParserServiceRoleDefaultPolicy7B935B80
+      - FileParserServiceRoleCD32C150
+      - searchenginevpcprivatesubnetSubnet1DefaultRouteC1364812
+      - searchenginevpcprivatesubnetSubnet1RouteTableAssociation6FF2DE61
+      - searchenginevpcprivatesubnetSubnet2DefaultRouteEA11075F
+      - searchenginevpcprivatesubnetSubnet2RouteTableAssociation36C424D3
+    Metadata:
+      aws:cdk:path: SearchEngineStack/FileParser/Resource
+      aws:asset:path: asset.6df36e04658325a9cd0b547d3cf6ee2c1fb75cbc20be4fa2fc9f2d2724406e4d.zip
+      aws:asset:is-bundled: false
+      aws:asset:property: Code
+  BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: SearchEngineStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource
+  BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: s3:PutBucketNotification
+            Effect: Allow
+            Resource: "*"
+        Version: "2012-10-17"
+      PolicyName: BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36
+      Roles:
+        - Ref: BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC
+    Metadata:
+      aws:cdk:path: SearchEngineStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource
+  BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)
+      Code:
+        ZipFile: |-
+          import boto3  # type: ignore
+          import json
+          import logging
+          import urllib.request
+
+          s3 = boto3.client("s3")
+
+          EVENTBRIDGE_CONFIGURATION = 'EventBridgeConfiguration'
+          CONFIGURATION_TYPES = ["TopicConfigurations", "QueueConfigurations", "LambdaFunctionConfigurations"]
+
+          def handler(event: dict, context):
+            response_status = "SUCCESS"
+            error_message = ""
+            try:
+              props = event["ResourceProperties"]
+              notification_configuration = props["NotificationConfiguration"]
+              managed = props.get('Managed', 'true').lower() == 'true'
+              skipDestinationValidation = props.get('SkipDestinationValidation', 'false').lower() == 'true'
+              stack_id = event['StackId']
+              old = event.get("OldResourceProperties", {}).get("NotificationConfiguration", {})
+              if managed:
+                config = handle_managed(event["RequestType"], notification_configuration)
+              else:
+                config = handle_unmanaged(props["BucketName"], stack_id, event["RequestType"], notification_configuration, old)
+              s3.put_bucket_notification_configuration(Bucket=props["BucketName"], NotificationConfiguration=config, SkipDestinationValidation=skipDestinationValidation)
+            except Exception as e:
+              logging.exception("Failed to put bucket notification configuration")
+              response_status = "FAILED"
+              error_message = f"Error: {str(e)}. "
+            finally:
+              submit_response(event, context, response_status, error_message)
+
+          def handle_managed(request_type, notification_configuration):
+            if request_type == 'Delete':
+              return {}
+            return notification_configuration
+
+          def handle_unmanaged(bucket, stack_id, request_type, notification_configuration, old):
+            def get_id(n):
+              n['Id'] = ''
+              sorted_notifications = sort_filter_rules(n)
+              strToHash=json.dumps(sorted_notifications, sort_keys=True).replace('"Name": "prefix"', '"Name": "Prefix"').replace('"Name": "suffix"', '"Name": "Suffix"')
+              return f"{stack_id}-{hash(strToHash)}"
+            def with_id(n):
+              n['Id'] = get_id(n)
+              return n
+
+            external_notifications = {}
+            existing_notifications = s3.get_bucket_notification_configuration(Bucket=bucket)
+            for t in CONFIGURATION_TYPES:
+              if request_type == 'Update':
+                  old_incoming_ids = [get_id(n) for n in old.get(t, [])]
+                  external_notifications[t] = [n for n in existing_notifications.get(t, []) if not get_id(n) in old_incoming_ids]      
+              elif request_type == 'Delete':
+                  external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'].startswith(f"{stack_id}-")]
+              elif request_type == 'Create':
+                  external_notifications[t] = [n for n in existing_notifications.get(t, [])]
+            if EVENTBRIDGE_CONFIGURATION in existing_notifications:
+              external_notifications[EVENTBRIDGE_CONFIGURATION] = existing_notifications[EVENTBRIDGE_CONFIGURATION]
+
+            if request_type == 'Delete':
+              return external_notifications
+
+            notifications = {}
+            for t in CONFIGURATION_TYPES:
+              external = external_notifications.get(t, [])
+              incoming = [with_id(n) for n in notification_configuration.get(t, [])]
+              notifications[t] = external + incoming
+
+            if EVENTBRIDGE_CONFIGURATION in notification_configuration:
+              notifications[EVENTBRIDGE_CONFIGURATION] = notification_configuration[EVENTBRIDGE_CONFIGURATION]
+            elif EVENTBRIDGE_CONFIGURATION in external_notifications:
+              notifications[EVENTBRIDGE_CONFIGURATION] = external_notifications[EVENTBRIDGE_CONFIGURATION]
+
+            return notifications
+
+          def submit_response(event: dict, context, response_status: str, error_message: str):
+            response_body = json.dumps(
+              {
+                "Status": response_status,
+                "Reason": f"{error_message}See the details in CloudWatch Log Stream: {context.log_stream_name}",
+                "PhysicalResourceId": event.get("PhysicalResourceId") or event["LogicalResourceId"],
+                "StackId": event["StackId"],
+                "RequestId": event["RequestId"],
+                "LogicalResourceId": event["LogicalResourceId"],
+                "NoEcho": False,
+              }
+            ).encode("utf-8")
+            headers = {"content-type": "", "content-length": str(len(response_body))}
+            try:
+              req = urllib.request.Request(url=event["ResponseURL"], headers=headers, data=response_body, method="PUT")
+              with urllib.request.urlopen(req) as response:
+                print(response.read().decode("utf-8"))
+              print("Status code: " + response.reason)
+            except Exception as e:
+                print("send(..) failed executing request.urlopen(..): " + str(e))
+
+          def sort_filter_rules(json_obj):
+            if not isinstance(json_obj, dict):
+                return json_obj
+            for key, value in json_obj.items():
+                if isinstance(value, dict):
+                    json_obj[key] = sort_filter_rules(value)
+                elif isinstance(value, list):
+                    json_obj[key] = [sort_filter_rules(item) for item in value]
+            if "Filter" in json_obj and "Key" in json_obj["Filter"] and "FilterRules" in json_obj["Filter"]["Key"]:
+                filter_rules = json_obj["Filter"]["Key"]["FilterRules"]
+                sorted_filter_rules = sorted(filter_rules, key=lambda x: x["Name"])
+                json_obj["Filter"]["Key"]["FilterRules"] = sorted_filter_rules
+            return json_obj
+      Handler: index.handler
+      Role:
+        Fn::GetAtt:
+          - BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC
+          - Arn
+      Runtime: python3.11
+      Timeout: 300
+    DependsOn:
+      - BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36
+      - BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC
+    Metadata:
+      aws:cdk:path: SearchEngineStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource
+  CDKMetadata:
+    Type: AWS::CDK::Metadata
+    Properties:
+      Analytics: v2:deflate64:H4sIAAAAAAAA/31SQW7CMBB8C3fjtiAh9QihRblUVlJxRRtnAZfERt41CEX5e5WEJC2VeprxeL07HnsmXxYL+TyBK011fpoWJpNVyqBPIkFywWsUcKVdhXomq+1Zi2hvtyoSKmSF0WnILHKjjSxxgfETsgJHfdSWRE4bYOPsUNyQt1g18AG8AcYr3ITy5gKMY+PYMnqLQ0Hn5L5aMoM+lmhZpKiDN3zbeBfOrYd/hdgePBKJ2BKD1diN6ngtaC6rVdCnzsKddbACwloUUGY5yCraW4W+NETN1d6D1f0de14Ln5OsFHgokdEPdtarB20NDBkQDpa6EH4c+COMjrEAYqNBH7F19VAaNRtREYjR18JAKavEdW/VonKF0W24I+ubK+/2pmhT2QERMsllA7WIArErhy/TNBv4ry3l3cXk6JvwRHs4ZTgYe2gn9jHUQt346OzTXL7KxeSLjJn6YNmUKJMOvwFaTGDvugIAAA==
+    Metadata:
+      aws:cdk:path: SearchEngineStack/CDKMetadata/Default
+Parameters:
+  SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64
+  SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2
+  BootstrapVersion:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /cdk-bootstrap/hnb659fds/version
+    Description: Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]
+
