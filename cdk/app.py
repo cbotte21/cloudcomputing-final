@@ -9,7 +9,8 @@ from aws_cdk import (
     aws_elasticache as elasticache,
     aws_iam as iam,
     aws_sns as s3_notifications,
-    SecretValue
+    SecretValue,
+    Duration
 )
 from aws_cdk.aws_s3_notifications import LambdaDestination
 from constructs import Construct
@@ -203,6 +204,8 @@ class MyStack(cdk.Stack):
                 "PG_PASSWORD": db_password,
                 "S3_BUCKET_NAME": bucket.bucket_name
             },
+            timeout= Duration.seconds(5),
+            memory_size=256
         )
         lambda_function.add_to_role_policy(
             iam.PolicyStatement(
