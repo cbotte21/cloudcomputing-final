@@ -52,15 +52,29 @@ def create_rds_connection():
         raise
 
 def insert_into_rds(connection, document):
-    """Inserts a document into the PostgreSQL RDS database."""
+    """Inserts a document into the PostgreSQL RDS database, creating the table if it does not exist."""
     try:
         with connection.cursor() as cursor:
-            sql = """
-            INSERT INTO your_table_name (author, content, description , published_date, title, url) 
+            # Create the table if it does not exist
+            create_table_sql = """
+            CREATE TABLE IF NOT EXISTS your_table_name (
+                id SERIAL PRIMARY KEY,
+                author VARCHAR(255),
+                content TEXT,
+                description TEXT,
+                published_date VARCHAR(30),
+                title VARCHAR(255),
+                url VARCHAR(255) UNIQUE
+            )
+            """
+            cursor.execute(create_table_sql)
+
+            # Insert the document
+            insert_sql = """
+            INSERT INTO your_table_name (author, content, description, published_date, title, url) 
             VALUES (%s, %s, %s, %s, %s, %s)
             """
-            # Adjust field names and values based on your document structure
-            cursor.execute(sql, (document['author'], document['content'], document['description'], document['published_date'], document['title'], document['url']))
+            cursor.execute(insert_sql, (document['author'], document['content'], document['description'], document['published_date'], document['title'], document['url']))
             connection.commit()
             print(f"Insert successful for URL: {document['url']}")
     except Exception as e:

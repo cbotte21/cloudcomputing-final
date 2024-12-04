@@ -103,7 +103,7 @@ class MyStack(cdk.Stack):
         )
 
         # Create an EC2 instance
-        webServerInstance = ec2.Instance(self, "WebServer",
+        webServerInstance = ec2.Instance(self, "webServer",
             instance_type=ec2.InstanceType("t2.micro"),
             machine_image=ec2.AmazonLinuxImage(
                 generation=ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023  
