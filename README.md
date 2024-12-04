@@ -1,7 +1,7 @@
 # cloudcomputing-final
 
-## Work
+A fully functional search engine. Upon deploying, will scrape pages from the internet, process them, and supply them to the front end for querying.
 
-1) Adjust lambda function to upload parsed data to RDI instead of OpenSearch. Trigger lambda on file uploads to S3, make sure file name parameter is correct.
-2) Create infrastructure as code to deploy our application.
-3) Fix web application to use RDS instead of opensearch.
+## Important notes
+
+Before deploying the app, change the SSH key name to a valid EC2 SSH key in your region. Or delete the ssh key logic entirely.
